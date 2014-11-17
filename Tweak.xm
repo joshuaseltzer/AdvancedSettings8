@@ -33,19 +33,24 @@ the generation of a class list and an automatic constructor.
 %end
 */
 
-#import <Preferences.framework/PSSpecifier.h>
+#import <Preferences/PSSpecifier.h>
 
-%hook PrefsListController
+%hook GeneralController
 
 - (NSMutableArray *)specifiers
 {
     NSMutableArray *specifiers = %orig();
 
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        PSSpecifier *exampleSpecifier = [PSSpecifier preferenceSpecifierNamed:@"Example" target:self set:NULL get:NULL detail:NULL cell:PSLinkCell edit:Nil];
-        [specifiers insertObject:exampleSpecifier atIndex:0];
-    });
+    //static dispatch_once_t onceToken;
+    //dispatch_once(&onceToken, ^{
+        // add a new group at the end
+        PSSpecifier *groupSpecifierCell = [PSSpecifier preferenceSpecifierNamed:nil target:self set:NULL get:NULL detail:NULL cell:PSGroupCell edit:nil];
+        [specifiers addObject:groupSpecifierCell];
+
+        // add a generic link cell after the new group
+        PSSpecifier *advancedLinkCell = [PSSpecifier preferenceSpecifierNamed:@"Advanced" target:self set:NULL get:NULL detail:NULL cell:PSTitleValueCell edit:nil];
+        [specifiers addObject:advancedLinkCell];
+    //});
 
     return specifiers;
 }

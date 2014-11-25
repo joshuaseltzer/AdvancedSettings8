@@ -1,58 +1,65 @@
-/* How to Hook with Logos
-Hooks are written with syntax similar to that of an Objective-C @implementation.
-You don't need to #include <substrate.h>, it will be done automatically, as will
-the generation of a class list and an automatic constructor.
+// string that defines the bundle ID of the settings app
+static NSString *settingsBundleId = @"com.apple.Preferences";
 
-%hook ClassName
+// flag that determines if we have presented the advanced settings
+BOOL presentedAdvancedSettings = NO;
 
-// Hooking a class method
-+ (id)sharedInstance {
-	return %orig;
-}
+@interface SBPrototypeController : NSObject
+// the shared instance of the prototype controller
++ (id)sharedInstance;
 
-// Hooking an instance method with an argument.
-- (void)messageName:(int)argument {
-	%log; // Write a message about this call, including its class, name and arguments, to the system log.
+// method that will show or hide the controller
+- (void)showOrHide;
+@end
 
-	%orig; // Call through to the original function with its original arguments.
-	%orig(nil); // Call through to the original function with a custom argument.
+@interface SBIcon : NSObject
+// return the bundle ID that corresponds to the icon
+- (id)applicationBundleID;
+@end
 
-	// If you use %orig(), you MUST supply all arguments (except for self and _cmd, the automatically generated ones.)
-}
+@interface SBIconView
+// the corresponding SBIcon object for the SBIconView
+@property(retain, nonatomic) SBIcon* icon;
+@end
 
-// Hooking an instance method with no arguments.
-- (id)noArguments {
-	%log;
-	id awesome = %orig;
-	[awesome doSomethingElse];
+%hook SBIconView
 
-	return awesome;
-}
-
-// Always make sure you clean up after yourself; Not doing so could have grave consequences!
-%end
-*/
-
-#import <Preferences/PSSpecifier.h>
-
-%hook GeneralController
-
-- (NSMutableArray *)specifiers
+// invoked when the long press timer on a Springboard icon is fired
+- (void)longPressTimerFired
 {
-    NSMutableArray *specifiers = %orig();
+    // check to see if the application bundle ID is equal to the settings app
+    if ([[self.icon applicationBundleID] isEqualToString:settingsBundleId]) {
+        // set our presentation flag to YES
+        presentedAdvancedSettings = YES;
+        
+        // show the advanced settings
+        [[%c(SBPrototypeController) sharedInstance] showOrHide];
+    } else {
+        // perform the original implementation for any other app icon
+        %orig;
+    }
+}
 
-    //static dispatch_once_t onceToken;
-    //dispatch_once(&onceToken, ^{
-        // add a new group at the end
-        PSSpecifier *groupSpecifierCell = [PSSpecifier preferenceSpecifierNamed:nil target:self set:NULL get:NULL detail:NULL cell:PSGroupCell edit:nil];
-        [specifiers addObject:groupSpecifierCell];
+%end
 
-        // add a generic link cell after the new group
-        PSSpecifier *advancedLinkCell = [PSSpecifier preferenceSpecifierNamed:@"Advanced" target:self set:NULL get:NULL detail:NULL cell:PSTitleValueCell edit:nil];
-        [specifiers addObject:advancedLinkCell];
-    //});
+%hook SBApplicationIcon
 
-    return specifiers;
+// launches an application
+- (void)launchFromLocation:(int)location
+{
+    // check to see if the application bundle ID is equal to the settings app
+    if ([[self applicationBundleID] isEqualToString:settingsBundleId]) {
+        if (presentedAdvancedSettings) {
+            // if we have presented the advanced settings, then reset the flag
+            presentedAdvancedSettings = NO;
+        } else {
+            // otherwise, launch the settings app
+            %orig;
+        }
+    } else {
+        // perform the original implementation for any other app icon
+        %orig;
+    }
 }
 
 %end

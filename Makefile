@@ -4,9 +4,11 @@ include theos/makefiles/common.mk
 
 TWEAK_NAME = AdvancedSettings8
 AdvancedSettings8_FILES = Tweak.xm
-AdvancedSettings8_PRIVATE_FRAMEWORKS = Preferences
+
+THEOS_PACKAGE_BASE_VERSION = 1.0.0
+_THEOS_INTERNAL_PACKAGE_VERSION = 1.0.0
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
 after-install::
-	install.exec "killall -9 Preferences"
+	install.exec "killall -9 SpringBoard"

@@ -3,7 +3,7 @@ Name: AdvancedSettings8
 Depends: mobilesubstrate
 Version: 0.0.1
 Architecture: iphoneos-arm
-Description: An awesome MobileSubstrate tweak!
+Description: Tap and hold on the Settings icon on the home screen to show Apple's Advanced Settings.  There are no options to configure.
 Maintainer: Joshua Seltzer
 Author: Joshua Seltzer
 Section: Tweaks

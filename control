@@ -3,7 +3,7 @@ Name: AdvancedSettings8
 Depends: mobilesubstrate
 Version: 0.0.1
 Architecture: iphoneos-arm
-Description: Tap and hold on the Settings icon on the home screen to show Apple's Advanced Settings.  There are no options to configure.
+Description: Tap and hold on the Settings icon to bring up Apple's advanced settings.  These settings will not be retained on a reboot.  Enable or disable the tweak from the preference panel.
 Maintainer: Joshua Seltzer
 Author: Joshua Seltzer
 Section: Tweaks

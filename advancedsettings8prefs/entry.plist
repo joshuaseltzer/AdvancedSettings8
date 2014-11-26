@@ -1,0 +1,10 @@
+{
+	entry = {
+		bundle = "AdvancedSettings8Prefs";
+		cell = PSLinkCell;
+		detail = "AdvancedSettings8PrefsListController";
+		icon = "AdvancedSettings8.png";
+		isController = 1;
+		label = AdvancedSettings8;
+	};
+}

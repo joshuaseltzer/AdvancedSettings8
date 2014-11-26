@@ -1,5 +1,6 @@
-// string that defines the bundle ID of the settings app
-static NSString *settingsBundleId = @"com.apple.Preferences";
+// define our constants
+#define kSettingsPath [NSHomeDirectory() stringByAppendingPathComponent:@"/Library/Preferences/com.joshuaseltzer.advancedsettings8prefs.plist"]
+#define kAppBundleId  @"com.apple.Preferences"
 
 // flag that determines if we have presented the advanced settings
 BOOL presentedAdvancedSettings = NO;
@@ -22,13 +23,27 @@ BOOL presentedAdvancedSettings = NO;
 @property(retain, nonatomic) SBIcon* icon;
 @end
 
+BOOL isEnabled()
+{
+    // attempt to get the preferences from the plist
+    NSDictionary *prefs = [[NSDictionary alloc] initWithContentsOfFile:kSettingsPath];
+
+    // See if it we have preferences and if it is enabled.  By default it is enabled
+    BOOL isEnabled = YES;
+    if (prefs) {
+        isEnabled = [[prefs objectForKey:@"enabled"] boolValue];
+    }
+    
+    return isEnabled;
+}
+
 %hook SBIconView
 
 // invoked when the long press timer on a Springboard icon is fired
 - (void)longPressTimerFired
 {
     // check to see if the application bundle ID is equal to the settings app
-    if ([[self.icon applicationBundleID] isEqualToString:settingsBundleId]) {
+    if (isEnabled() && [[self.icon applicationBundleID] isEqualToString:kAppBundleId]) {
         // set our presentation flag to YES
         presentedAdvancedSettings = YES;
         
@@ -48,7 +63,7 @@ BOOL presentedAdvancedSettings = NO;
 - (void)launchFromLocation:(int)location
 {
     // check to see if the application bundle ID is equal to the settings app
-    if ([[self applicationBundleID] isEqualToString:settingsBundleId]) {
+    if (isEnabled() && [[self applicationBundleID] isEqualToString:kAppBundleId]) {
         if (presentedAdvancedSettings) {
             // if we have presented the advanced settings, then reset the flag
             presentedAdvancedSettings = NO;

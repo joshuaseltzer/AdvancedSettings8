@@ -8,8 +8,8 @@ BOOL presentedAdvancedSettings = NO;
 // the shared instance of the prototype controller
 + (id)sharedInstance;
 
-// method that will show or hide the controller
-- (void)showOrHide;
+// method that will show the controller
+- (void)_showSettings;
 @end
 
 @interface SBIcon : NSObject
@@ -33,7 +33,7 @@ BOOL presentedAdvancedSettings = NO;
         presentedAdvancedSettings = YES;
         
         // show the advanced settings
-        [[%c(SBPrototypeController) sharedInstance] showOrHide];
+        [[%c(SBPrototypeController) sharedInstance] _showSettings];
     } else {
         // perform the original implementation for any other app icon
         %orig;

@@ -36,23 +36,7 @@
 			<key>label</key>
 			<string>Donate</string>
 			<key>action</key>
-			<string>donateToMe</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSGroupCell</string>
-			<key>footerText</key>
-			<string>Fellow developer AdamDevy provided the code that prevents the advanced settings from resetting on a reboot.  Please consider a donation if you found his contribution helpful.</string>
-		</dict>
-		<dict>
-			<key>cell</key>
-			<string>PSButtonCell</string>
-			<key>icon</key>
-			<string>paypal.png</string>
-			<key>label</key>
-			<string>Donate to Adam</string>
-			<key>action</key>
-			<string>donateToAdam</string>
+			<string>donate</string>
 		</dict>
 	</array>
 	<key>title</key>

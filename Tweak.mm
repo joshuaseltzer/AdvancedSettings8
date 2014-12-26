@@ -9,10 +9,13 @@
 #import "AppleInterfaces.h"
 
 // define the path to the preferences plist
-#define kJSSettingsPath [NSHomeDirectory() stringByAppendingPathComponent:@"/Library/Preferences/com.joshuaseltzer.advancedsettings8prefs.plist"]
+#define SETTINGS_PATH [NSHomeDirectory() stringByAppendingPathComponent:kJSSettingsPath]
 
 // define the constant for the application bundle ID that we need to check for
-#define kJSAppBundleId  @"com.apple.Preferences"
+static NSString *const kJSAppBundleId = @"com.apple.Preferences";
+
+// constant that defines the string that points to our preference plist
+static NSString *const kJSSettingsPath = @"/Library/Preferences/com.joshuaseltzer.advancedsettings8prefs.plist";
 
 // flag that determines if we have presented the advanced settings
 static BOOL sJSPresentedSettings = NO;
@@ -21,7 +24,7 @@ static BOOL sJSPresentedSettings = NO;
 BOOL isEnabled()
 {
     // attempt to get the preferences from the plist
-    NSDictionary *prefs = [[NSDictionary alloc] initWithContentsOfFile:kJSSettingsPath];
+    NSDictionary *prefs = [[NSDictionary alloc] initWithContentsOfFile:SETTINGS_PATH];
 
     // See if it we have preferences and if it is enabled.  By default it is enabled
     BOOL isEnabled = YES;

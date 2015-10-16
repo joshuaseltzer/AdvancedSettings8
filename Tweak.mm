@@ -7,9 +7,13 @@
 //
 
 #import "AppleInterfaces.h"
+#import <UIKit/UIKit.h>
+
+// macros to determine which system software this device is running
+#define SYSTEM_VERSION_IOS9     [[[%c(UIDevice) currentDevice] systemVersion] floatValue] >= 9.0
 
 // define the path to the preferences plist
-#define SETTINGS_PATH [NSHomeDirectory() stringByAppendingPathComponent:kJSSettingsPath]
+#define SETTINGS_PATH           [NSHomeDirectory() stringByAppendingPathComponent:kJSSettingsPath]
 
 // define the constant for the application bundle ID that we need to check for
 static NSString *const kJSAppBundleId = @"com.apple.Preferences";
@@ -34,6 +38,9 @@ BOOL isEnabled()
     
     return isEnabled;
 }
+
+// the iOS8 specific hooks
+%group iOS8
 
 // hook to see when we long press on an icon
 %hook SBIconView
@@ -79,3 +86,65 @@ BOOL isEnabled()
 }
 
 %end
+
+%end
+
+// the iOS9 specific hooks
+%group iOS9
+
+// hook to see when we long press on an icon
+%hook SBIconView
+
+// fired when the first half long press is invoked
+- (void)_handleSecondHalfLongPressTimer:(id)arg1
+{
+    // Check to see if the application bundle ID is equal to the settings app.  Disallow the settings
+    // to display if we are already in edit mode
+    if (!self.isEditing && isEnabled() && [[self.icon applicationBundleID] isEqualToString:kJSAppBundleId]) {
+        // set our presentation flag to YES
+        sJSPresentedSettings = YES;
+        
+        // show the advanced settings
+        [[%c(SBPrototypeController) sharedInstance] _showSettings];
+    } else {
+        // perform the original implementation for any other app icon
+        %orig;
+    }
+}
+
+%end
+
+// hook to see when we tap on an icon
+%hook SBApplicationIcon
+
+// launches an application
+- (void)launchFromLocation:(int)arg1 context:(id)arg2
+{
+    // check to see if the application bundle ID is equal to the settings app
+    if (isEnabled() && [[self applicationBundleID] isEqualToString:kJSAppBundleId]) {
+        if (sJSPresentedSettings) {
+            // if we have presented the advanced settings, then reset the flag
+            sJSPresentedSettings = NO;
+        } else {
+            // otherwise, launch the settings app
+            %orig;
+        }
+    } else {
+        // perform the original implementation for any other app icon
+        %orig;
+    }
+}
+
+%end
+
+%end
+
+// constructor which will decide which hooks to include depending which system software the device
+// is running
+%ctor {
+    if (SYSTEM_VERSION_IOS9) {
+        %init(iOS9);
+    } else {
+        %init(iOS8);
+    }
+}

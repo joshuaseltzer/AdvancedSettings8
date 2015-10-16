@@ -1,7 +1,7 @@
 Package: com.joshuaseltzer.advancedsettings8
 Name: AdvancedSettings8
 Depends: mobilesubstrate
-Version: 1.0.1
+Version: 1.1.0
 Architecture: iphoneos-arm
 Description: Tap and hold on the Settings icon to bring up Apple's advanced settings.  These settings will not be retained on a reboot.  Enable or disable the tweak from the preference panel.
 Maintainer: Joshua Seltzer
